@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "extends": "damage_pilot_v1.json",
+  "scope": "Controlled offensive-stat/Unaware probes, not a legal OU team pool or hidden-set prior. One ability-overlay case deliberately isolates the attacking-Unaware Foul Play path.",
+  "pokemon": {
+    "dondozo": {"species": "Dondozo", "ability": "Unaware", "nature": "Impish", "evs": {"hp": 252, "def": 252}},
+    "haxorus": {"species": "Haxorus", "ability": "Mold Breaker", "nature": "Adamant", "evs": {"atk": 252}},
+    "clodsire": {"species": "Clodsire", "ability": "Unaware", "nature": "Careful", "evs": {"hp": 252, "spd": 252}},
+    "clefable": {"species": "Clefable", "ability": "Unaware", "nature": "Bold", "evs": {"hp": 252, "def": 252}},
+    "umbreon": {"species": "Umbreon", "ability": "Synchronize", "nature": "Calm", "evs": {"hp": 252, "spd": 252}}
+  },
+  "cases": [
+    {"id": "body_press_negative_defense", "attacker": "tusk", "defender": "blissey", "move": "Body Press", "attacker_override": {"boosts": {"def": -2}}},
+    {"id": "body_press_attack_boost_irrelevant", "attacker": "tusk", "defender": "blissey", "move": "Body Press", "attacker_override": {"boosts": {"atk": 6}}},
+    {"id": "body_press_unaware_positive", "attacker": "corviknight", "defender": "dondozo", "move": "Body Press", "attacker_override": {"boosts": {"def": 2}}},
+    {"id": "body_press_unaware_negative", "attacker": "corviknight", "defender": "dondozo", "move": "Body Press", "attacker_override": {"boosts": {"def": -2}}},
+    {"id": "foul_play_unaware_target_positive", "attacker": "umbreon", "defender": "dondozo", "move": "Foul Play", "defender_override": {"boosts": {"atk": 2}}},
+    {"id": "foul_play_unaware_target_negative", "attacker": "umbreon", "defender": "dondozo", "move": "Foul Play", "defender_override": {"boosts": {"atk": -2}}},
+    {"id": "foul_play_user_attack_irrelevant", "attacker": "umbreon", "defender": "tusk", "move": "Foul Play", "attacker_override": {"boosts": {"atk": 6}}},
+    {"id": "foul_play_positive_target_and_defense", "attacker": "umbreon", "defender": "tusk", "move": "Foul Play", "defender_override": {"boosts": {"atk": 2, "def": 2}}},
+    {"id": "foul_play_attacking_unaware_overlay", "attacker": "umbreon", "defender": "tusk", "move": "Foul Play", "attacker_override": {"ability": "Unaware"}, "defender_override": {"boosts": {"atk": 2, "def": -2}}},
+    {"id": "physical_unaware_ignores_positive_attack", "attacker": "tusk", "defender": "dondozo", "move": "Earthquake", "attacker_override": {"boosts": {"atk": 2}}},
+    {"id": "physical_unaware_ignores_negative_attack", "attacker": "tusk", "defender": "dondozo", "move": "Earthquake", "attacker_override": {"boosts": {"atk": -2}}},
+    {"id": "mold_breaker_bypasses_defending_unaware", "attacker": "haxorus", "defender": "dondozo", "move": "Earthquake", "attacker_override": {"boosts": {"atk": 2}}},
+    {"id": "special_unaware_ignores_positive_spa", "attacker": "rotom", "defender": "dondozo", "move": "Thunderbolt", "attacker_override": {"boosts": {"spa": 2}}},
+    {"id": "special_unaware_ignores_negative_spa", "attacker": "rotom", "defender": "dondozo", "move": "Thunderbolt", "attacker_override": {"boosts": {"spa": -2}}},
+    {"id": "attacking_unaware_ignores_negative_defense", "attacker": "clodsire", "defender": "gholdengo", "move": "Earthquake", "defender_override": {"boosts": {"def": -2}}},
+    {"id": "attacking_unaware_ignores_negative_spdef", "attacker": "clefable", "defender": "gholdengo", "move": "Moonblast", "defender_override": {"boosts": {"spd": -2}}},
+    {"id": "defending_moldbreaker_does_not_suppress_unaware_physical", "attacker": "clodsire", "defender": "haxorus", "move": "Earthquake", "defender_override": {"boosts": {"def": 2}}},
+    {"id": "defending_moldbreaker_does_not_suppress_unaware_special", "attacker": "clefable", "defender": "haxorus", "move": "Moonblast", "defender_override": {"boosts": {"spd": 2}}}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "scope": "Controlled weather recovery probes; custom move/species pairings, not OU team validation",
+  "damage_fixtures": "damage_pilot_v1.json",
+  "cases": [
+    {"id": "morning_sun_rounds", "base": "physical_super_effective", "moves": ["Morning Sun", "Splash"], "weather": "Sun", "hp": [100, null], "attacker_override": {"ability": "Pressure"}},
+    {"id": "shore_up_rounds", "base": "physical_super_effective", "moves": ["Shore Up", "Splash"], "weather": "Sand", "hp": [100, null]},
+    {"id": "morning_sun_fixed_point", "base": "physical_super_effective", "moves": ["Morning Sun", "Splash"], "weather": "Sun", "hp": [100, null], "attacker_override": {"species": "Blissey", "ability": "Natural Cure", "item": "", "evs": {"hp": 8, "atk": 0, "def": 0, "spa": 0, "spd": 0, "spe": 0}}},
+    {"id": "morning_sun_half_tie_down", "base": "physical_super_effective", "moves": ["Morning Sun", "Splash"], "hp": [100, null]},
+    {"id": "morning_sun_bad_weather_half_tie_down", "base": "physical_super_effective", "moves": ["Morning Sun", "Splash"], "weather": "Sand", "hp": [100, null], "attacker_override": {"ivs": {"hp": 30}}}
+  ]
+}

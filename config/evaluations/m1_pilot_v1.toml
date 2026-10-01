@@ -1,0 +1,29 @@
+schema_version = 1
+format = "gen9ou"
+search_time_ms_per_world = 100
+purpose = "Recovered exploratory five-pair runtime pilot; not a ranking or controlled-seed experiment."
+limitations = [
+  "Completed in two segments; continuation shared host/server with an accidental duplicate pair-4 run.",
+  "Agent usernames were reused in that concurrent duplicate; distinct battle tags and mirrored outcomes checked, but isolated timing is not established.",
+  "One recorded invalid Minikazam selection was handled by upstream random legal fallback.",
+  "Only ten games and one checkpoint; no Elo or leaderboard conclusion."
+]
+
+[[segments]]
+directory = ".artifacts/baseline_runs/head_to_head/m1_pilot_5pairs_100ms_20260930_b"
+games = [1, 2, 3, 4, 5, 6]
+
+[[segments]]
+directory = ".artifacts/baseline_runs/head_to_head/m1_pilot_pairs4_5_100ms_20260930"
+games = [7, 8, 9, 10]
+summary_sha256 = "3f088795f2a633efdd0021c3f38cc9bb2d29cf4e90aaff2e5cb8c45d33c56403"
+
+[[excluded]]
+directory = ".artifacts/baseline_runs/head_to_head/m1_pilot_5pairs_100ms_20260930_b"
+games = [7, 8]
+reason = "Unpaired completed game and interrupted game; not in the planned paired aggregate."
+
+[[excluded]]
+directory = ".artifacts/baseline_runs/head_to_head/m1_pilot_pair4_100ms_20260930"
+games = [7, 8]
+reason = "Accidental duplicate pair; retain separately, do not increase the planned sample."

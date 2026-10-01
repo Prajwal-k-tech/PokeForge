@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "extends": "damage_critical_stats_adjudications_v1.json",
+  "scope": "Separately labeled critstats-v1 variant; fixed stat-selection defects do not remove known staged-arithmetic discrepancies",
+  "cases": {
+    "body_press_defense_override": {"engine_maxima": [1014,1521], "oracle_maxima": [1014,1520], "classification": "modifier-stage-approximation", "evidence": "Positive Defense retained in critical offensive stat; remaining one-point difference is unchanged late critical/STAB integer arithmetic"},
+    "attacking_unaware_ignores_negative_defense": {"engine_maxima": [153,229], "oracle_maxima": [152,228], "classification": "modifier-stage-approximation", "evidence": "Unaware now ignores negative target Defense on both paths; remaining one-point differences are aggregated STAB/type/critical arithmetic"}
+  }
+}

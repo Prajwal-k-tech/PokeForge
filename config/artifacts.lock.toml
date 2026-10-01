@@ -1,0 +1,439 @@
+schema_version = 1
+updated = "2026-09-30"
+
+# Candidate pins become adopted only after their declared smoke test passes.
+
+[[artifacts]]
+name = "public-delays-encore-parser-differential-v4"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/states/multiturn_v4_verified/summary.json"
+revision = "2026-10-01"
+sha256 = "71468e3bc810f28df9ad15a900e59047a4151ae1091878b59e9c1e13acabbb71"
+license = "project-local evidence; team redistribution rights unresolved"
+status = "verified-offline-scoped"
+notes = "Hashes 32 native parser reports: 16 player streams, 80 matching checkpoints, 64 non-preview public states checked against offline oracle truth. Two actual even/odd Wish healing controls. Payload v2, not full framework/simulator conformance, live integration or playing-strength evidence."
+
+[[artifacts]]
+name = "frozen-multiturn-player-fixtures-v2-room"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/frozen_pool/multiturn_players_v2_room.json"
+revision = "2026-10-01"
+sha256 = "abc9b628ac7e265853729860c98cd85e26a8f8a463f4cc4185cdeea40e603cfe"
+license = "project-local evidence; team redistribution rights unresolved"
+status = "verified-offline-fixtures-only"
+notes = "Eight scripted normal-preview trajectories, sixteen player-channel transcripts; explicitly modeled pinned RoomBattle request-ID envelope, not network captures. Full report retains private oracle truth, never live-policy input. Parser conformance is documented separately for Chilly Reception only."
+
+[[artifacts]]
+name = "foul-play"
+kind = "source"
+source = "https://github.com/pmariglia/foul-play.git"
+revision = "6c467c081e862fb321adb405355beb41aba8e226"
+license = "GPL-3.0"
+status = "candidate"
+
+[[artifacts]]
+name = "poke-engine-repository"
+kind = "source-reference"
+source = "https://github.com/pmariglia/poke-engine.git"
+revision = "f4e224c75bf7af885c85c1dcba982b4143ebf582"
+license = "MIT"
+status = "provenance-only"
+notes = "Do not substitute this repository revision for FoulPlay's declared poke-engine package pin."
+
+[[artifacts]]
+name = "poke-engine-foulplay-runtime"
+kind = "python-sdist"
+source = "https://files.pythonhosted.org/packages/source/p/poke-engine/poke_engine-0.0.48.tar.gz"
+revision = "0.0.48"
+sha256 = "070010686f2aedff11e25137e696e301ccd80fd57c805d255464067fc905ca12"
+license = "MIT"
+status = "candidate"
+notes = "Build with FoulPlay's terastallization feature flags; package contents differ from the audited repository HEAD."
+
+[[artifacts]]
+name = "poke-engine-foulplay-built-wheel"
+kind = "python-wheel"
+source = "locally built from the locked poke-engine 0.0.48 sdist"
+revision = "0.0.48-cp312-cp312-linux_x86_64"
+sha256 = "ac0b98444a1eaffc858c0c2d3b9cc0f49e9c4b886d25da6ff63442ef864394e7"
+license = "MIT"
+status = "verified-offline"
+notes = "Built with poke-engine/terastallization and --no-default-features; machine/platform specific."
+
+[[artifacts]]
+name = "direct-damage-pilot-v5"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/damage/direct_pilot_v5_verified.json"
+revision = "2026-09-30"
+sha256 = "f92db191732a3a61678e967e00bd3b6d349a9f91e5d4007145e0ba9517a526e9"
+license = "project-local-evidence"
+status = "verified-offline-with-mismatches"
+notes = "32 controlled direct-hit cases: all Showdown/Smogon rolls agree; engine maxima agree in 17, with 13 modifier-stage discrepancies and two critical-stat bugs. Native/wrapper match locked wheel; Rust source matches locked sdist. No live integration or full transition conformance. Earlier v1 snow harness result is quarantined."
+
+[[artifacts]]
+name = "poke-engine-critstats-v1-built-wheel"
+kind = "python-wheel"
+source = "locked 0.0.48 sdist plus patches/poke_engine_0_0_48_critstats_v1.patch"
+revision = "pokeforge-critstats-v1 (base package 0.0.48)"
+sha256 = "9acc292309727153a2133a670e35a84ee5cb736fa73ca76ee5e843602b2ed936"
+patch_source = "patches/poke_engine_0_0_48_critstats_v1.patch"
+patch_sha256 = "e027305740f69e84312fb65452554b2a469b4a5162dd6127daa7859ff8c54178"
+changed_source = "genx/damage_calc.rs"
+changed_source_sha256 = "7712a77f97b625cf48163d579244ece9de8b395a2af2589459b9c0bead0ff1d3"
+license = "MIT"
+status = "offline-experimental"
+notes = "Isolated critical-stat/Unaware correction only. Build uses maturin 1.12.6, Cargo.lock, no-default-features and poke-engine/terastallization. Never interchangeable with pinned baseline 0.0.48 despite same base package version; actual wheel/variant hashes required. Not live-integrated or full damage conformance."
+
+[[artifacts]]
+name = "critical-stats-baseline-v3-report"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/damage/critical_stats_baseline_v3_adjudicated.json"
+revision = "2026-09-30"
+sha256 = "55c3a2c6e53d54e7148f2bb3c0c8f3b428ba3ca91c1578cdb21901b7d2af4313"
+license = "PokeForge project license pending"
+status = "verified-offline-with-mismatches"
+notes = "50 direct-hit fixtures with corrected active-context Showdown oracle; all oracle supports agree. Pinned baseline 26 exact maximum pairs, 15 arithmetic discrepancies, nine stat-selection bug fixtures. Extended v1 missing-context evidence quarantined."
+
+[[artifacts]]
+name = "critical-stats-variant-v2-report"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/damage/critical_stats_variant_v2_adjudicated.json"
+revision = "2026-09-30"
+sha256 = "8ba92cfcde598c181ad7ac0463f088f8a9e8c169e43a84d1640620bd6857dcac"
+license = "PokeForge project license pending"
+status = "verified-offline-with-mismatches"
+notes = "Isolated critstats-v1 variant, 33/50 exact maximum pairs and 17 classified arithmetic discrepancies. Not unchanged upstream reproduction, exact roll support, full transitions, live integration or strength evidence."
+
+[[artifacts]]
+name = "critical-stats-paired-audit-v1"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/damage/critical_stats_paired_audit_v1.json"
+revision = "2026-09-30"
+sha256 = "3b4c1513e5bd0b928763add687028686a0031110937e5db2a926f992ac5822b0"
+license = "PokeForge project license pending"
+status = "verified-offline-slice"
+notes = "Checks identical inputs/oracle distributions/provenance and variant labels; nine changed pairs, 41 unchanged, no increased maximum absolute error in 50 fixtures. Not global/statistical strength or simulator conformance."
+
+[[artifacts]]
+name = "foulplay-state-pilot-v9"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/states/foulplay_v9_observed.json"
+revision = "2026-09-30"
+sha256 = "297b5f7e7036c9ba67190339067c27da58d9e604d2f026da192ef84652aaee82"
+license = "PokeForge project license pending"
+status = "verified-offline-slice"
+notes = "25 request/terminal snapshots from actual native FoulPlay parser, with shared observation/identity ledger and empty inference datasets. Checked slice, not full state/simulator conformance or baseline search reproduction."
+
+[[artifacts]]
+name = "metamon-state-pilot-v9"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/states/metamon_v9_observed.json"
+revision = "2026-09-30"
+sha256 = "e56a8b8b1d0876dffa4d3f57e62b3b9bb153d5290c4b1ba04f0769c6c62e6751"
+license = "PokeForge project license pending"
+status = "verified-offline-slice"
+notes = "Pinned poke-env 0.8.3.3/e1268d native parser; all 25 semantic snapshots match FoulPlay after documented observation supplements. Reports hashes recomputed; no checkpoint inference/live attachment or Gate 0B completion."
+
+[[artifacts]]
+name = "metamon"
+kind = "source"
+source = "https://github.com/UT-Austin-RPL/metamon.git"
+revision = "0a00a759c9a4382a2877088d828302ec294a05a5"
+license = "MIT"
+status = "candidate"
+
+[[artifacts]]
+name = "metamon-checkpoints"
+kind = "model-repository"
+source = "https://huggingface.co/jakegrigsby/metamon"
+revision = "ac8e88e7da8dc2a2b85176d88f81fd8854b1445b"
+license = "Apache-2.0"
+status = "candidate"
+notes = "Repository revision locked; individual adopted checkpoints are recorded as separate artifacts."
+
+[[artifacts]]
+name = "minikazam-epoch-40"
+kind = "model-checkpoint"
+source = "https://huggingface.co/jakegrigsby/metamon"
+revision = "ac8e88e7da8dc2a2b85176d88f81fd8854b1445b:minikazam/ckpts/policy_weights/policy_epoch_40.pt"
+sha256 = "dda9cf7752d68343992987319a96db0a4c87f011ae6fedbb0521e46f0385cc88"
+license = "Apache-2.0"
+status = "verified-load"
+notes = "19,100,777 bytes; 134 keys and 4,761,813 checkpoint parameters validated on CUDA."
+
+[[artifacts]]
+name = "minikazam-epoch-46"
+kind = "model-checkpoint"
+source = "https://huggingface.co/jakegrigsby/metamon"
+revision = "ac8e88e7da8dc2a2b85176d88f81fd8854b1445b:minikazam/ckpts/policy_weights/policy_epoch_46.pt"
+sha256 = "a7bccf96b8159438e92b95b2f518488ba3519b27575e640ae3508587bb71031e"
+license = "Apache-2.0"
+status = "verified-local-battle"
+notes = "19,100,777 bytes; strict CUDA load and one legal 56-turn Gen 9 OU game verified."
+
+[[artifacts]]
+name = "abra-epoch-40"
+kind = "model-checkpoint"
+source = "https://huggingface.co/jakegrigsby/metamon"
+revision = "ac8e88e7da8dc2a2b85176d88f81fd8854b1445b:abra/ckpts/policy_weights/policy_epoch_40.pt"
+sha256 = "8f473d8b5cfb344925b753e0477b327c81012c01d000aa98e31096e25479b895"
+license = "Apache-2.0"
+status = "blocked-runtime-dependency"
+notes = "230,535,959 bytes; exact published config requires FlashAttention 2, which is absent from the pinned local runtime. No substituted attention backend is presented as reproduction."
+
+[[artifacts]]
+name = "metamon-amago"
+kind = "source-dependency"
+source = "https://github.com/UT-Austin-RPL/amago.git"
+revision = "0974781a9096ff43df1b708312256f96fc2ab127"
+license = "MIT"
+status = "verified-import"
+
+[[artifacts]]
+name = "metamon-poke-env"
+kind = "source-dependency"
+source = "https://github.com/UT-Austin-RPL/poke-env.git"
+revision = "e1268d270c3f2bd32c7ff5713e01062302020579"
+license = "MIT"
+status = "verified-import"
+
+[[artifacts]]
+name = "smogon-damage-calc"
+kind = "offline-conformance-oracle"
+source = "https://github.com/smogon/damage-calc.git"
+revision = "660b9b85f39ee59f4768f40a07676e7ad7d5ac0a"
+license = "MIT"
+status = "verified-offline"
+notes = "@smogon/calc 0.12.0; use for offline differential tests, not the live decision loop."
+
+[[artifacts]]
+name = "pokemon-showdown-local"
+kind = "source"
+source = "https://github.com/smogon/pokemon-showdown.git"
+revision = "a5df8274e85b0889bf2a9b3422a08b39732374fc"
+license = "MIT"
+status = "observed-dirty"
+notes = "Local package-lock.json is modified; preserve it and do not treat this checkout as a clean experimental pin."
+
+[[artifacts]]
+name = "pokeforge-gen9ou-smoke-team"
+kind = "evaluation-fixture"
+source = "data/teams/smoke/pokeforge_smoke.gen9ou_team"
+revision = "2026-09-30"
+sha256 = "ed74dca8676f5e148c33ab44fa3a7f10d4792662d5fc3b3d064610a5dfe9789a"
+license = "PokeForge project license pending"
+status = "verified-showdown-gen9ou"
+
+[[artifacts]]
+name = "foulplay-local-raw-request-capture"
+kind = "protocol-fixture"
+source = ".artifacts/golden_requests/foulplay_vs_random_raw.json"
+revision = "2026-09-30"
+sha256 = "086226d06a124caafc970f7dbaa513261327d0b00333dde7de42a569ca8cdd19"
+license = "PokeForge project license pending"
+status = "captured-local"
+notes = "27 parsed and re-serialized player-visible local Showdown request objects, not exact received payload bytes; one reduced projection is under tests/fixtures. This older capture cannot establish exact-request hashing."
+
+[[artifacts]]
+name = "foulplay-local-exact-protocol-v1"
+kind = "protocol-fixture"
+source = ".artifacts/golden_requests/foulplay_protocol_v1.jsonl"
+revision = "2026-09-30:battle-gen9ou-227"
+sha256 = "f545c81a5c09a8b364f708d56b6cc79def61d56574f8a8ea5dd069f200240dc2"
+license = "PokeForge project license pending"
+status = "verified-local-capture"
+notes = "75 exact player-visible battle messages and 24 exact request strings; hashes recomputed. Both pinned framework action formatters checked on all 18 actionable requests. Not complete state/simulator conformance."
+
+[[artifacts]]
+name = "foulplay-action-differential-v3"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/actions/foulplay_v3_capture.json"
+revision = "6c467c081e862fb321adb405355beb41aba8e226"
+sha256 = "d71bc4b8ec22dfa4e8e971e3e7d3aa1249d75067da98c3244936e2e38c3331d7"
+license = "PokeForge project license pending"
+status = "verified-action-boundary"
+notes = "Actual pinned formatter, eight projected/synthetic scenarios plus eighteen actionable exact requests. No search/state/damage conformance claim."
+
+[[artifacts]]
+name = "metamon-action-differential-and-sampling-probe-v3"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/actions/metamon_v3_sampling.json"
+revision = "0a00a759c9a4382a2877088d828302ec294a05a5"
+sha256 = "ac5babfa696c61df4bad513e941a4e651b0166419435b05a67c24ea92be55be4"
+license = "PokeForge project license pending"
+status = "verified-action-boundary-sampling-hazard"
+notes = "Actual pinned formatter, twenty-six scenarios; separate CPU probe shows probability clipping restores masked-out mass. Not complete policy/state/simulator conformance."
+
+[[artifacts]]
+name = "request-gated-policy-local-pair-v2"
+kind = "local-evaluation-report"
+source = ".artifacts/baseline_runs/head_to_head/request_gated_pair4_v2_20260930/summary.json"
+revision = "2026-09-30:opt-in-pokeforge-request-gated-v1"
+sha256 = "1db02f551914c9106c333276317e344b791b379c45381d3b3e2a673215416808"
+license = "PokeForge project license pending"
+status = "verified-local-policy-boundary"
+notes = "Two local games, 135 legal decisions including 13 forced replacements; zero recorded gate/server/default-fallback errors. FoulPlay won both; no strength claim. Source hashes and limitations in REQUEST_GATED_POLICY.md."
+
+[[artifacts]]
+name = "request-gated-policy-trace-audit-v2"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/actions/request_gated_v2_trace_audit.json"
+revision = "2026-09-30"
+sha256 = "38488b2b71f35ee2e49f7b0a82367f96d72200ea4d3130c6885da779a3769161"
+license = "PokeForge project license pending"
+status = "verified-recorded-action-probability-request-consistency"
+notes = "135 exact-request choices checked, illegal probability exactly zero. Same report hash on repeat. Not independent full state/simulator conformance."
+
+[[artifacts]]
+name = "m1-recovered-five-pair-runtime-pilot"
+kind = "local-evaluation-report"
+source = ".artifacts/baseline_runs/head_to_head/m1_pilot_recovered_v1.json"
+revision = "config/evaluations/m1_pilot_v1.toml"
+sha256 = "06a3ba044988a8ce025d8a3c0e15f980da62623b5394ef7d7bd69b9925509526"
+license = "PokeForge project license pending"
+status = "verified-exploratory"
+notes = "Ten selected games in two segments, FoulPlay 9 wins, Minikazam 1; one upstream invalid selection with random legal fallback. Continuation overlapped duplicate run; not isolated latency or ranking evidence."
+
+[[artifacts]]
+name = "foulplay-smogon-gen9ou-1695-stats"
+kind = "inference-data"
+source = "https://www.smogon.com/stats/2026-08/chaos/gen9ou-0.json"
+revision = "2026-08"
+sha256 = "7f602aed04fc0e42d16420f905b0166711aa4a894a0b87c4f380504e56cea729"
+license = "not declared in artifact"
+status = "verified-local-cache"
+notes = "Hash is FoulPlay's extracted JSON data object, not the remote response envelope."
+
+[[artifacts]]
+name = "foulplay-showdown-sets-gen9ou"
+kind = "inference-data"
+source = "https://play.pokemonshowdown.com/data/sets/gen9ou.json"
+revision = "retrieved-2026-09-30"
+sha256 = "898612165656b5969ef7fbecd764faf8a623039a27eaa2f912c16881b3fba087"
+license = "not declared in artifact"
+status = "verified-local-cache"
+
+[[artifacts]]
+name = "foulplay-full-sets-gen9ou"
+kind = "inference-data"
+source = "https://data.foulplay.cc/gen9ou/pokemon_full_sets.json"
+revision = "retrieved-2026-09-30"
+sha256 = "e6129b38f2a605a5464d014a817ca3083986eae87617033a4f82266565b51772"
+license = "not declared in artifact"
+status = "verified-local-cache"
+
+[[artifacts]]
+name = "foulplay-replay-moves-gen9ou"
+kind = "inference-data"
+source = "https://data.foulplay.cc/gen9ou/replay_moves.json"
+revision = "retrieved-2026-09-30"
+sha256 = "c9fc21cedf5b4468b767285fba7e9a998dd3d3a4c775a5b02827895fe9647889"
+license = "not declared in artifact"
+status = "verified-local-cache"
+
+[[artifacts]]
+name = "metamon-competitive-gen9ou-teams"
+kind = "evaluation-team-pool"
+source = "https://huggingface.co/datasets/jakegrigsby/metamon-teams"
+revision = "bff785c80a06273faee1c675d368948f5dd65d44"
+sha256 = "ab8ede8d06e0247b9c3b7385823c3fcb5b2d5615162072736197005a90770f11"
+license = "not declared in dataset card"
+status = "audited-incompatible"
+notes = "v5 competitive/gen9ou archive; 16 extracted teams. At least one team violates the current pinned Showdown rules, so it is not used by the smoke harness."
+
+[[artifacts]]
+name = "joint-turn-conformance-pilot-v3"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/joint_turns/pilot_v3_verified.json"
+revision = "2026-10-01"
+sha256 = "f30a1c55806686d6589c2410057fe58506882a4472473911c14301ee235910c2"
+license = "PokeForge project license pending"
+status = "verified-offline-pilot-not-live-integrated"
+notes = "19 controlled mechanic probes, 64 seeded full Showdown turns each. Installed critstats-v1 binary/wrapper match earlier wheel-verified evidence. Three diagnosed transition defects remain; sampled support is not an exact distribution or full OU conformance."
+
+[[artifacts]]
+name = "poke-engine-jointfix-v1-built-wheel"
+kind = "python-wheel"
+source = ".artifacts/conformance/engine/jointfix-v1/poke_engine-0.0.48-cp312-cp312-manylinux_2_34_x86_64.whl"
+revision = "pokeforge-jointfix-v1 (base package 0.0.48)"
+sha256 = "524dbde4c452447cc87d8281f95372f180e1c9fc2e3d04a3c23c475ce7157a96"
+patch_source = "patches/poke_engine_0_0_48_jointfix_v1.patch"
+patch_sha256 = "bd047b140d201592b676b44441599ae3d3a5061e6b7b502263546e4a5c024674"
+changed_tests_sha256 = "399bd4917b061e8bd76ad35bde8dfddd059c77d4db596b4a423a82062c7a1c4b"
+license = "MIT"
+status = "offline-experimental"
+notes = "Cumulative patch from the locked sdist: critical stats plus independent speed-order choices, Gen 5+ ordinary move-recovery rounding, Showdown fixed-point weather recovery, exact Helmet fraction, and regressions. Separate environment; never interchangeable with baseline or critstats-v1. Not live-integrated."
+[artifacts.changed_sources]
+"genx/damage_calc.rs" = "7712a77f97b625cf48163d579244ece9de8b395a2af2589459b9c0bead0ff1d3"
+"genx/generate_instructions.rs" = "dbd7aa8b8c398384e24a577e489c2fa6ea0599e8cd49576201a2d172e741d8bc"
+"genx/items.rs" = "2f8df3236679aa976817c037a31dada6e50375d75f964ce7d1d98c72853c98d8"
+
+[[artifacts]]
+name = "jointfix-v2-original-control-report"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/joint_turns/jointfix_v2_original_controls.json"
+revision = "2026-10-01"
+sha256 = "454c32ec07d8889b72352f63e3142ee27e0e7b88a71966c1eda06917726d4ed9"
+license = "PokeForge project license pending"
+status = "verified-offline-pilot"
+notes = "Final jointfix-v1 wheel, original 19 probes/64 seeds. Recover corrected; Helmet actor HP correct in both orders. Remaining collapsed damage supports and arithmetic are not fixed."
+
+[[artifacts]]
+name = "jointfix-v2-weather-control-report"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/joint_turns/jointfix_v2_weather_controls.json"
+revision = "2026-10-01"
+sha256 = "1ec6c3dbbc7eb665891ba749b79fea42c571e39d2d8f4d67f21c5591d9da5917"
+license = "PokeForge project license pending"
+status = "verified-offline-pilot"
+notes = "Five weather recovery probes/64 seeds, including fixed-point and half-tie boundaries; all sampled projections agree. Not exact full simulator conformance."
+
+[[artifacts]]
+name = "jointfix-v2-direct-regression-report"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/damage/jointfix_v2_regression.json"
+revision = "2026-10-01"
+sha256 = "e689bd89ef9618f242f1eed82a5635fdd24f21f91135cfb0da5e0c3f0db0ee67"
+license = "PokeForge project license pending"
+status = "verified-offline-with-mismatches"
+notes = "All 50 maxima unchanged from critstats-v1; 33 matching pairs, 17 arithmetic discrepancies. Independent oracles agree across 1600 controlled rolls."
+
+[[artifacts]]
+name = "jointfix-paired-audit-v2"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/joint_turns/jointfix_paired_audit_v2.json"
+revision = "2026-10-01"
+sha256 = "16c02af2153f06fe1d79a6065a49d9b99a221fe2a7fee97a5e5e34e6308df35c"
+license = "PokeForge project license pending"
+status = "verified-offline-paired-controls"
+notes = "Four diagnosed actor-HP changes only, fifteen unchanged cases, five weather controls, fifty unchanged direct maxima. No strength or exact stochastic conformance claim."
+
+[[artifacts]]
+name = "frozen-pool-normalized-scan-v3"
+kind = "local-conformance-report"
+source = ".artifacts/conformance/frozen_pool/full_pool_v3_normalized.json"
+revision = "2026-10-01"
+sha256 = "2826d96254c7394e2e7681beef82525de811341bdcf8a805ec2d5cf803703289"
+license = "PokeForge project license pending; input team rights unresolved"
+status = "verified-offline-diagnostic"
+notes = "330 actual move/switch jobs, 5280 seeded low-PP first-turn observations. Corrected paralysis/fainted projection, reused raw Showdown outcomes; 28 non-HP misses. Not exact stochastic or multi-turn conformance."
+
+[[artifacts]]
+name = "frozen-pool-coverage-witnesses-v2"
+kind = "local-conformance-summary"
+source = ".artifacts/conformance/frozen_pool/coverage_and_witnesses_v2_adjudicated.json"
+revision = "2026-10-01"
+sha256 = "e6bf07cb5cda07690db4800e5d3fe2be9be10ea57b3ff66a99cace0a3e0e7c73"
+license = "PokeForge project license pending"
+status = "verified-derived-witnesses-not-competitive-evidence"
+notes = "All 90 moves scheduled, 110 jobs need extra history/state checks; 36 apparent matches remain uncertified. Distinguishes three missing critical-KO witnesses from twenty PP-prevention witnesses."
+
+[[artifacts]]
+name = "frozen-pool-multiturn-oracle-v2"
+kind = "local-oracle-trajectories"
+source = ".artifacts/conformance/frozen_pool/multiturn_oracle_v2_verified.json"
+revision = "2026-10-01"
+sha256 = "ac4a4041c53b69e1a140fa2495df106a0ba385956818e2032cfbd7b899550426"
+license = "PokeForge project license pending; input team rights unresolved"
+status = "verified-showdown-only-not-engine-conformance"
+notes = "32 scripted trajectories, 96 decisions: Future Sight source switch, Wish replacement heal, Chilly Reception waiting/pivot, Encore selected-move replacement. Private oracle truth must be player-channel filtered for parser reuse; no live integration."

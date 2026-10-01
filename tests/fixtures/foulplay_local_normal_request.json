@@ -1,0 +1,26 @@
+{
+  "active": [
+    {
+      "canTerastallize": "Water",
+      "moves": [
+        {"disabled": false, "id": "hurricane", "maxpp": 16, "move": "Hurricane", "pp": 16, "target": "any"},
+        {"disabled": false, "id": "uturn", "maxpp": 32, "move": "U-turn", "pp": 32, "target": "normal"},
+        {"disabled": false, "id": "surf", "maxpp": 24, "move": "Surf", "pp": 24, "target": "allAdjacent"},
+        {"disabled": false, "id": "roost", "maxpp": 8, "move": "Roost", "pp": 8, "target": "self"}
+      ]
+    }
+  ],
+  "rqid": 4,
+  "side": {
+    "id": "p1",
+    "name": "PokeForgeFoulPlay",
+    "pokemon": [
+      {"ability": "drizzle", "active": true, "baseAbility": "drizzle", "condition": "262/262", "details": "Pelipper, M", "ident": "p1: Pelipper", "item": "choicespecs", "moves": ["hurricane", "uturn", "surf", "roost"], "teraType": "Water", "terastallized": ""},
+      {"ability": "vesselofruin", "active": false, "baseAbility": "vesselofruin", "condition": "514/514", "details": "Ting-Lu", "ident": "p1: Ting-Lu", "item": "leftovers", "moves": ["earthquake", "spikes", "stealthrock", "whirlwind"], "teraType": "Water", "terastallized": ""},
+      {"ability": "regenerator", "active": false, "baseAbility": "regenerator", "condition": "431/431", "details": "Amoonguss, F", "ident": "p1: Amoonguss", "item": "rockyhelmet", "moves": ["foulplay", "grassknot", "sludgebomb", "synthesis"], "teraType": "Water", "terastallized": ""},
+      {"ability": "infiltrator", "active": false, "baseAbility": "infiltrator", "condition": "317/317", "details": "Dragapult, M", "ident": "p1: Dragapult", "item": "choiceband", "moves": ["dragondarts", "uturn", "phantomforce", "suckerpunch"], "teraType": "Ghost", "terastallized": ""},
+      {"ability": "quarkdrive", "active": false, "baseAbility": "quarkdrive", "condition": "321/321", "details": "Iron Treads", "ident": "p1: Iron Treads", "item": "airballoon", "moves": ["earthquake", "voltswitch", "rapidspin", "knockoff"], "teraType": "Ghost", "terastallized": ""},
+      {"ability": "quarkdrive", "active": false, "baseAbility": "quarkdrive", "condition": "289/289", "details": "Iron Valiant", "ident": "p1: Iron Valiant", "item": "choicescarf", "moves": ["moonblast", "aurasphere", "thunderbolt", "trick"], "teraType": "Fairy", "terastallized": ""}
+    ]
+  }
+}

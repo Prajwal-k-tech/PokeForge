@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "scope": "Controlled Gen 9 Custom Game mechanic probes, not legal OU teams; seeded observations are not exact probability distributions",
+  "damage_fixtures": "damage_pilot_v1.json",
+  "cases": [
+    {"id": "boost_and_leftovers", "base": "physical_super_effective", "moves": ["Swords Dance", "Splash"], "hp": [100, 100]},
+    {"id": "protect_blocks_earthquake", "base": "physical_super_effective", "moves": ["Earthquake", "Protect"]},
+    {"id": "sucker_punch_into_status", "base": "physical_super_effective", "moves": ["Sucker Punch", "Swords Dance"]},
+    {"id": "good_as_gold_blocks_status", "base": "physical_super_effective", "moves": ["Thunder Wave", "Splash"]},
+    {"id": "spikes_setup", "base": "physical_super_effective", "moves": ["Spikes", "Splash"]},
+    {"id": "recover_and_burn", "base": "burn_physical", "moves": ["Recover", "Splash"], "hp": [100, 100]},
+    {"id": "recover_even_maxhp_control", "base": "burn_physical", "moves": ["Recover", "Splash"], "hp": [100, 100], "attacker_override": {"evs": {"hp": 4}}},
+    {"id": "switch_into_rocks", "base": "physical_super_effective", "moves": ["Splash", "Splash"], "actions": ["switch 2", "move 1"], "hazards": [{"stealthrock": 1}, {}]},
+    {"id": "boots_ignore_rocks", "base": "physical_super_effective", "moves": ["Splash", "Splash"], "actions": ["switch 2", "move 1"], "bench_one_item": "Heavy-Duty Boots", "hazards": [{"stealthrock": 1}, {}]},
+    {"id": "regenerator_switch_out", "base": "foul_play_target_attack", "moves": ["Splash", "Splash"], "actions": ["switch 2", "move 1"], "hp": [100, 100]},
+    {"id": "air_balloon_immunity", "base": "air_balloon_ground_immunity", "moves": ["Earthquake", "Splash"]},
+    {"id": "earthquake_and_residual", "base": "physical_super_effective", "moves": ["Earthquake", "Splash"]},
+    {"id": "contact_helmet", "base": "foul_play_target_attack", "moves": ["Foul Play", "Splash"]},
+    {"id": "contact_helmet_attacker_faster", "base": "foul_play_target_attack", "moves": ["Foul Play", "Splash"], "attacker_override": {"evs": {"spe": 4}}},
+    {"id": "contact_helmet_attacker_slower", "base": "foul_play_target_attack", "moves": ["Foul Play", "Splash"], "defender_override": {"evs": {"spe": 4}}},
+    {"id": "knock_off_balloon", "base": "knock_off_air_balloon", "moves": ["Knock Off", "Splash"]},
+    {"id": "life_orb_and_secondary", "base": "life_orb", "moves": ["Thunderbolt", "Splash"]},
+    {"id": "guaranteed_faint_before_reply", "base": "physical_super_effective", "moves": ["Earthquake", "Shadow Ball"], "hp": [null, 1]},
+    {"id": "tera_flying_immunity", "base": "tera_changed_defensive_type", "moves": ["Earthquake", "Splash"]}
+  ]
+}

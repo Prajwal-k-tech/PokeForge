@@ -1,0 +1,281 @@
+diff --git a/src/genx/damage_calc.rs b/src/genx/damage_calc.rs
+index 2faae0c..f175bb8 100644
+--- a/src/genx/damage_calc.rs
++++ b/src/genx/damage_calc.rs
+@@ -372,11 +372,18 @@ fn get_attacking_and_defending_stats(
+             {
+                 should_calc_attacker_boost = false;
+             }
+-            if attacker.ability == Abilities::UNAWARE && defender.ability != Abilities::MOLDBREAKER
+-            {
++            if attacker.ability == Abilities::UNAWARE {
+                 should_calc_defender_boost = false;
+             }
+ 
++            // Unaware also applies when a critical hit selects its offensive/defensive stats.
++            if !should_calc_attacker_boost {
++                crit_attacking_stat = attacker.attack;
++            }
++            if !should_calc_defender_boost {
++                crit_defending_stat = defender.defense;
++            }
++
+             // Get the attacking stat
+ 
+             // checks for moves that change which stat is used for the attacking_stat
+@@ -387,7 +394,11 @@ fn get_attacking_and_defending_stats(
+                 } else {
+                     attacking_final_stat = defender.attack;
+                 }
+-                crit_attacking_stat = defending_side.get_active_immutable().attack;
++                crit_attacking_stat = if should_calc_attacker_boost && defending_side.attack_boost > 0 {
++                    attacking_final_stat
++                } else {
++                    defender.attack
++                };
+             } else if choice.move_id == Choices::BODYPRESS {
+                 if should_calc_attacker_boost {
+                     attacking_final_stat =
+@@ -395,7 +406,11 @@ fn get_attacking_and_defending_stats(
+                 } else {
+                     attacking_final_stat = attacker.defense;
+                 }
+-                crit_attacking_stat = attacking_side.get_active_immutable().defense;
++                crit_attacking_stat = if should_calc_attacker_boost && attacking_side.defense_boost > 0 {
++                    attacking_final_stat
++                } else {
++                    attacker.defense
++                };
+             } else if should_calc_attacker_boost {
+                 attacking_final_stat =
+                     attacking_side.calculate_boosted_stat(PokemonBoostableStat::Attack);
+@@ -431,11 +446,17 @@ fn get_attacking_and_defending_stats(
+             {
+                 should_calc_attacker_boost = false;
+             }
+-            if attacker.ability == Abilities::UNAWARE && defender.ability != Abilities::MOLDBREAKER
+-            {
++            if attacker.ability == Abilities::UNAWARE {
+                 should_calc_defender_boost = false;
+             }
+ 
++            if !should_calc_attacker_boost {
++                crit_attacking_stat = attacker.special_attack;
++            }
++            if !should_calc_defender_boost {
++                crit_defending_stat = defender.special_defense;
++            }
++
+             // Get the attacking stat
+             if should_calc_attacker_boost {
+                 attacking_final_stat =
+@@ -450,7 +471,7 @@ fn get_attacking_and_defending_stats(
+                 || choice.move_id == Choices::SECRETSWORD
+                 || choice.move_id == Choices::PSYSTRIKE
+             {
+-                if defending_side.defense_boost <= 0 {
++                if should_calc_defender_boost && defending_side.defense_boost <= 0 {
+                     crit_defending_stat =
+                         defending_side.calculate_boosted_stat(PokemonBoostableStat::Defense);
+                 } else {
+@@ -684,6 +705,46 @@ mod tests {
+     use super::*;
+     use crate::state::{PokemonStatus, PokemonType, SideReference, State, VolatileStatusBitset};
+ 
++    #[test]
++    fn pokeforge_gen9_critical_offensive_stat_and_unaware_regression() {
++        // (move, category, user Atk/Def/SpA, target Atk/Def/SpD, abilities,
++        // expected regular offense/defense and critical offense/defense).
++        let cases = [
++            (Choices::BODYPRESS, MoveCategory::Physical, [0, 2, 0], [0, 0, 0], Abilities::NONE, Abilities::NONE, (200, 100, 200, 100)),
++            (Choices::BODYPRESS, MoveCategory::Physical, [0, -2, 0], [0, 0, 0], Abilities::NONE, Abilities::NONE, (50, 100, 100, 100)),
++            (Choices::BODYPRESS, MoveCategory::Physical, [6, 0, 0], [0, 0, 0], Abilities::NONE, Abilities::NONE, (100, 100, 100, 100)),
++            (Choices::FOULPLAY, MoveCategory::Physical, [0, 0, 0], [2, 0, 0], Abilities::NONE, Abilities::NONE, (200, 100, 200, 100)),
++            (Choices::FOULPLAY, MoveCategory::Physical, [0, 0, 0], [-2, 0, 0], Abilities::NONE, Abilities::NONE, (50, 100, 100, 100)),
++            (Choices::FOULPLAY, MoveCategory::Physical, [6, 0, 0], [0, 0, 0], Abilities::NONE, Abilities::NONE, (100, 100, 100, 100)),
++            (Choices::BODYPRESS, MoveCategory::Physical, [0, 2, 0], [0, 0, 0], Abilities::NONE, Abilities::UNAWARE, (100, 100, 100, 100)),
++            (Choices::FOULPLAY, MoveCategory::Physical, [0, 0, 0], [2, 0, 0], Abilities::NONE, Abilities::UNAWARE, (100, 100, 100, 100)),
++            (Choices::TACKLE, MoveCategory::Physical, [2, 0, 0], [0, 0, 0], Abilities::NONE, Abilities::UNAWARE, (100, 100, 100, 100)),
++            (Choices::TACKLE, MoveCategory::Physical, [2, 0, 0], [0, 0, 0], Abilities::MOLDBREAKER, Abilities::UNAWARE, (200, 100, 200, 100)),
++            (Choices::WATERGUN, MoveCategory::Special, [0, 0, 2], [0, 0, 0], Abilities::NONE, Abilities::UNAWARE, (100, 100, 100, 100)),
++            (Choices::TACKLE, MoveCategory::Physical, [0, 0, 0], [0, -2, 0], Abilities::UNAWARE, Abilities::NONE, (100, 100, 100, 100)),
++            (Choices::WATERGUN, MoveCategory::Special, [0, 0, 0], [0, 0, -2], Abilities::UNAWARE, Abilities::NONE, (100, 100, 100, 100)),
++            (Choices::TACKLE, MoveCategory::Physical, [0, 0, 0], [0, 2, 0], Abilities::UNAWARE, Abilities::MOLDBREAKER, (100, 100, 100, 100)),
++            (Choices::WATERGUN, MoveCategory::Special, [0, 0, 0], [0, 0, 2], Abilities::UNAWARE, Abilities::MOLDBREAKER, (100, 100, 100, 100)),
++            (Choices::PSYSHOCK, MoveCategory::Special, [0, 0, 0], [0, -2, 0], Abilities::UNAWARE, Abilities::NONE, (100, 100, 100, 100)),
++        ];
++        for (move_id, category, user, target, user_ability, target_ability, expected) in cases {
++            let mut state = State::default();
++            state.side_one.get_active().ability = user_ability;
++            state.side_two.get_active().ability = target_ability;
++            state.side_one.attack_boost = user[0];
++            state.side_one.defense_boost = user[1];
++            state.side_one.special_attack_boost = user[2];
++            state.side_two.attack_boost = target[0];
++            state.side_two.defense_boost = target[1];
++            state.side_two.special_defense_boost = target[2];
++            let choice = Choice { move_id, category, ..Default::default() };
++            assert_eq!(get_attacking_and_defending_stats(
++                state.side_one.get_active_immutable(), state.side_two.get_active_immutable(),
++                &state.side_one, &state.side_two, &choice, Weather::NONE), expected,
++                "move={:?} user={:?} target={:?} abilities={:?}/{:?}", move_id, user, target, user_ability, target_ability);
++        }
++    }
++
+     #[test]
+     fn test_basic_damaging_move() {
+         let state = State::default();
+diff --git a/src/genx/generate_instructions.rs b/src/genx/generate_instructions.rs
+index 3b173fe..076e556 100644
+--- a/src/genx/generate_instructions.rs
++++ b/src/genx/generate_instructions.rs
+@@ -1112,6 +1112,7 @@ fn get_instructions_from_secondaries(
+                             },
+                             side_reference,
+                             &mut secondary_hit_instructions,
++                            Choices::NONE,
+                         );
+                     }
+                     Effect::RemoveItem => {
+@@ -1150,6 +1151,7 @@ fn get_instructions_from_heal(
+     heal: &Heal,
+     attacking_side_reference: &SideReference,
+     incoming_instructions: &mut StateInstructions,
++    move_id: Choices,
+ ) {
+     let target_side_ref: SideReference;
+     match heal.target {
+@@ -1159,7 +1161,21 @@ fn get_instructions_from_heal(
+ 
+     let target_pkmn = state.get_side(&target_side_ref).get_active();
+ 
+-    let mut health_recovered = (heal.amount * target_pkmn.maxhp as f32) as i16;
++    let recovery = heal.amount * target_pkmn.maxhp as f32;
++    // Weather recovery runs Showdown modify(): fixed-point scaling, half ties down.
++    // Ordinary Gen 5+ move healing rounds half up; item/secondary effects truncate.
++    let mut health_recovered = if matches!(move_id,
++        Choices::MORNINGSUN | Choices::MOONLIGHT | Choices::SYNTHESIS | Choices::SHOREUP)
++    {
++        let modifier = (heal.amount * 4096.0) as i32;
++        ((target_pkmn.maxhp as i32 * modifier + 2047) / 4096) as i16
++    } else if move_id != Choices::NONE && recovery > 0.0
++        && !cfg!(any(feature = "gen1", feature = "gen2", feature = "gen3", feature = "gen4"))
++    {
++        recovery.round() as i16
++    } else {
++        recovery as i16
++    };
+     let final_health = target_pkmn.hp + health_recovered;
+     if final_health > target_pkmn.maxhp {
+         health_recovered -= final_health - target_pkmn.maxhp;
+@@ -3613,7 +3629,7 @@ fn run_move(
+             );
+         }
+         if let Some(heal) = &choice.heal {
+-            get_instructions_from_heal(state, heal, &attacking_side, &mut instructions);
++            get_instructions_from_heal(state, heal, &attacking_side, &mut instructions, choice.move_id);
+         }
+     } // end multi-hit
+       // this is wrong, but I am deciding it is good enough for this engine (for now)
+@@ -4264,8 +4280,9 @@ pub fn generate_instructions_from_move_pair(
+             // side_one moves first
+             handle_both_moves(
+                 state,
+-                &mut side_one_choice,
+-                &mut side_two_choice,
++                // Move modifiers add effects in-place; each order needs pristine choices.
++                &mut side_one_choice.clone(),
++                &mut side_two_choice.clone(),
+                 SideReference::SideOne,
+                 side_one_moves_first_instruction,
+                 &mut state_instructions_vec,
+@@ -4529,6 +4546,52 @@ mod tests {
+         PokemonStatus, SideReference, State,
+     };
+ 
++    #[test]
++    fn test_gen9_move_recovery_rounds_but_secondary_healing_truncates() {
++        for (maxhp, move_id, factor, expected) in [
++            (289, Choices::RECOVER, 0.5, 145), (290, Choices::RECOVER, 0.5, 145),
++            (289, Choices::NONE, 0.5, 144), (289, Choices::MORNINGSUN, 0.5, 144),
++            (653, Choices::MORNINGSUN, 0.667, 436), (100, Choices::SHOREUP, 0.667, 67),
++            (370, Choices::MORNINGSUN, 0.25, 92), (371, Choices::MORNINGSUN, 0.25, 93),
++        ] {
++            let mut state = State::default();
++            state.side_one.get_active().maxhp = maxhp;
++            state.side_one.get_active().hp = 1;
++            let mut instructions = StateInstructions::default();
++            get_instructions_from_heal(&mut state, &Heal {target: MoveTarget::User, amount: factor},
++                                      &SideReference::SideOne, &mut instructions, move_id);
++            assert_eq!(state.side_one.get_active().hp, 1 + expected);
++        }
++    }
++
++    #[test]
++    fn test_helmet_single_activation_in_both_speed_tie_orders() {
++        for attacker_speed in [99, 100, 101] {
++            let mut state = State::default();
++            state.side_one.get_active().hp = 432;
++            state.side_one.get_active().maxhp = 432;
++            state.side_one.get_active().speed = attacker_speed;
++            state.side_two.get_active().speed = 100;
++            state.side_two.get_active().item = Items::ROCKYHELMET;
++            state.side_one.get_active().replace_move(PokemonMoveIndex::M0, Choices::TACKLE);
++            state.side_two.get_active().replace_move(PokemonMoveIndex::M0, Choices::SPLASH);
++            let original = format!("{:?}", state);
++            let branches = generate_instructions_from_move_pair(&mut state,
++                &MoveChoice::Move(PokemonMoveIndex::M0), &MoveChoice::Move(PokemonMoveIndex::M0), true);
++            assert_eq!(format!("{:?}", state), original);
++            assert!(!branches.is_empty());
++            for branch in branches {
++                let helmet_heals = branch.instruction_list.iter().filter(|instruction| matches!(instruction,
++                    Instruction::Heal(HealInstruction {side_ref: SideReference::SideOne, heal_amount: -72}))).count();
++                assert_eq!(helmet_heals, 1);
++                state.apply_instructions(&branch.instruction_list);
++                assert_eq!(state.side_one.get_active().hp, 360);
++                state.reverse_instructions(&branch.instruction_list);
++                assert_eq!(format!("{:?}", state), original);
++            }
++        }
++    }
++
+     #[test]
+     fn test_drag_move_as_second_move_exits_early_if_opponent_used_drag_move() {
+         let mut state: State = State::default();
+diff --git a/src/genx/items.rs b/src/genx/items.rs
+index 7600f99..cac0ff8 100644
+--- a/src/genx/items.rs
++++ b/src/genx/items.rs
+@@ -1028,7 +1028,7 @@ pub fn item_modify_attack_against(
+             if attacking_choice.flags.contact {
+                 attacking_choice.add_or_create_secondaries(Secondary {
+                     chance: 100.0,
+-                    effect: Effect::Heal(-0.166),
++                    effect: Effect::Heal(-1.0 / 6.0),
+                     target: MoveTarget::User,
+                 })
+             }
+diff --git a/tests/test_battle_mechanics.rs b/tests/test_battle_mechanics.rs
+index b1df01e..2c956e5 100644
+--- a/tests/test_battle_mechanics.rs
++++ b/tests/test_battle_mechanics.rs
+@@ -8676,7 +8676,8 @@ fn test_shoreup_in_sand() {
+         instruction_list: vec![
+             Instruction::Heal(HealInstruction {
+                 side_ref: SideReference::SideOne,
+-                heal_amount: 66,
++                // Gen 5+ move healing rounds 100 * 2/3 to 67.
++                heal_amount: if cfg!(feature = "gen4") { 66 } else { 67 },
+             }),
+             Instruction::Damage(DamageInstruction {
+                 side_ref: SideReference::SideTwo,
+@@ -9244,7 +9245,8 @@ fn test_morningsun_in_sun() {
+         percentage: 100.0,
+         instruction_list: vec![Instruction::Heal(HealInstruction {
+             side_ref: SideReference::SideOne,
+-            heal_amount: 66,
++            // Gen 5+ move healing rounds 100 * 2/3 to 67.
++            heal_amount: if cfg!(feature = "gen4") { 66 } else { 67 },
+         })],
+     }];
+     assert_eq!(expected_instructions, vec_of_instructions);

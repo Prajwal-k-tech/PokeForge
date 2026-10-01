@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+.venv/
+.venvs/
+.cache/
+venv/
+ENV/
+
+# Reproducible third-party baselines live outside the PokeForge source tree.
+.artifacts/
+
+# PyTorch Checkpoints & Large Data Tensors
+checkpoints/
+data/*.pt
+!data/.gitkeep
+
+# Pokémon Showdown Local Server
+pokemon-showdown/
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Logs
+*.log

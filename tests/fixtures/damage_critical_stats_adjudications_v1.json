@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "extends": "damage_pilot_adjudications_v1.json",
+  "scope": "Pinned baseline maxima for the extended critical-stat fixtures, using corrected active-context Showdown harness",
+  "cases": {
+    "body_press_negative_defense": {"engine_maxima": [258,765], "oracle_maxima": [258,764], "classification": "modifier-stage-approximation", "evidence": "Negative Defense is correctly bypassed on the crit; remaining difference follows late crit/STAB arithmetic in genx/damage_calc.rs"},
+    "body_press_attack_boost_irrelevant": {"engine_maxima": [510,765], "oracle_maxima": [510,764], "classification": "modifier-stage-approximation", "evidence": "Attack boost correctly irrelevant for Body Press; same staged integer difference as unboosted control"},
+    "foul_play_positive_target_and_defense": {"engine_maxima": [73,110], "oracle_maxima": [73,219], "classification": "supported-engine-bug", "evidence": "Critical Foul Play uses target base Attack rather than positive boosted Attack, genx/damage_calc.rs offensive override"},
+    "physical_unaware_ignores_positive_attack": {"engine_maxima": [129,382], "oracle_maxima": [129,193], "classification": "supported-engine-bug", "evidence": "Critical offensive stat chosen before defender Unaware gate and never reset; regular path honors Unaware"},
+    "special_unaware_ignores_positive_spa": {"engine_maxima": [468,1395], "oracle_maxima": [468,702], "classification": "supported-engine-bug", "evidence": "Critical special offensive stat chosen before defender Unaware gate and never reset; regular path honors Unaware"},
+    "attacking_unaware_ignores_negative_defense": {"engine_maxima": [153,450], "oracle_maxima": [152,228], "classification": "supported-engine-bug", "evidence": "Critical defensive stat retains target negative Defense despite attacking Unaware; regular path retains a separate staged-arithmetic discrepancy"},
+    "attacking_unaware_ignores_negative_spdef": {"engine_maxima": [63,187], "oracle_maxima": [63,94], "classification": "supported-engine-bug", "evidence": "Critical defensive stat retains target negative SpD despite attacking Unaware"},
+    "defending_moldbreaker_does_not_suppress_unaware_physical": {"engine_maxima": [57,166], "oracle_maxima": [111,166], "classification": "supported-engine-bug", "evidence": "Defending Mold Breaker incorrectly disables attacker Unaware in regular defensive-stat gate; Mold Breaker applies when its owner attacks"},
+    "defending_moldbreaker_does_not_suppress_unaware_special": {"engine_maxima": [159,468], "oracle_maxima": [312,468], "classification": "supported-engine-bug", "evidence": "Defending Mold Breaker incorrectly disables attacker Unaware in regular special defensive-stat gate"}
+  }
+}

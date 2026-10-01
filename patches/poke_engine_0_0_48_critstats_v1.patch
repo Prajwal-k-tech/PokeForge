@@ -1,0 +1,125 @@
+--- a/src/genx/damage_calc.rs
++++ b/src/genx/damage_calc.rs
+@@ -372,11 +372,18 @@
+             {
+                 should_calc_attacker_boost = false;
+             }
+-            if attacker.ability == Abilities::UNAWARE && defender.ability != Abilities::MOLDBREAKER
+-            {
++            if attacker.ability == Abilities::UNAWARE {
+                 should_calc_defender_boost = false;
+             }
+ 
++            // Unaware also applies when a critical hit selects its offensive/defensive stats.
++            if !should_calc_attacker_boost {
++                crit_attacking_stat = attacker.attack;
++            }
++            if !should_calc_defender_boost {
++                crit_defending_stat = defender.defense;
++            }
++
+             // Get the attacking stat
+ 
+             // checks for moves that change which stat is used for the attacking_stat
+@@ -387,7 +394,11 @@
+                 } else {
+                     attacking_final_stat = defender.attack;
+                 }
+-                crit_attacking_stat = defending_side.get_active_immutable().attack;
++                crit_attacking_stat = if should_calc_attacker_boost && defending_side.attack_boost > 0 {
++                    attacking_final_stat
++                } else {
++                    defender.attack
++                };
+             } else if choice.move_id == Choices::BODYPRESS {
+                 if should_calc_attacker_boost {
+                     attacking_final_stat =
+@@ -395,7 +406,11 @@
+                 } else {
+                     attacking_final_stat = attacker.defense;
+                 }
+-                crit_attacking_stat = attacking_side.get_active_immutable().defense;
++                crit_attacking_stat = if should_calc_attacker_boost && attacking_side.defense_boost > 0 {
++                    attacking_final_stat
++                } else {
++                    attacker.defense
++                };
+             } else if should_calc_attacker_boost {
+                 attacking_final_stat =
+                     attacking_side.calculate_boosted_stat(PokemonBoostableStat::Attack);
+@@ -431,11 +446,17 @@
+             {
+                 should_calc_attacker_boost = false;
+             }
+-            if attacker.ability == Abilities::UNAWARE && defender.ability != Abilities::MOLDBREAKER
+-            {
++            if attacker.ability == Abilities::UNAWARE {
+                 should_calc_defender_boost = false;
+             }
+ 
++            if !should_calc_attacker_boost {
++                crit_attacking_stat = attacker.special_attack;
++            }
++            if !should_calc_defender_boost {
++                crit_defending_stat = defender.special_defense;
++            }
++
+             // Get the attacking stat
+             if should_calc_attacker_boost {
+                 attacking_final_stat =
+@@ -450,7 +471,7 @@
+                 || choice.move_id == Choices::SECRETSWORD
+                 || choice.move_id == Choices::PSYSTRIKE
+             {
+-                if defending_side.defense_boost <= 0 {
++                if should_calc_defender_boost && defending_side.defense_boost <= 0 {
+                     crit_defending_stat =
+                         defending_side.calculate_boosted_stat(PokemonBoostableStat::Defense);
+                 } else {
+@@ -685,6 +706,46 @@
+     use crate::state::{PokemonStatus, PokemonType, SideReference, State, VolatileStatusBitset};
+ 
+     #[test]
++    fn pokeforge_gen9_critical_offensive_stat_and_unaware_regression() {
++        // (move, category, user Atk/Def/SpA, target Atk/Def/SpD, abilities,
++        // expected regular offense/defense and critical offense/defense).
++        let cases = [
++            (Choices::BODYPRESS, MoveCategory::Physical, [0, 2, 0], [0, 0, 0], Abilities::NONE, Abilities::NONE, (200, 100, 200, 100)),
++            (Choices::BODYPRESS, MoveCategory::Physical, [0, -2, 0], [0, 0, 0], Abilities::NONE, Abilities::NONE, (50, 100, 100, 100)),
++            (Choices::BODYPRESS, MoveCategory::Physical, [6, 0, 0], [0, 0, 0], Abilities::NONE, Abilities::NONE, (100, 100, 100, 100)),
++            (Choices::FOULPLAY, MoveCategory::Physical, [0, 0, 0], [2, 0, 0], Abilities::NONE, Abilities::NONE, (200, 100, 200, 100)),
++            (Choices::FOULPLAY, MoveCategory::Physical, [0, 0, 0], [-2, 0, 0], Abilities::NONE, Abilities::NONE, (50, 100, 100, 100)),
++            (Choices::FOULPLAY, MoveCategory::Physical, [6, 0, 0], [0, 0, 0], Abilities::NONE, Abilities::NONE, (100, 100, 100, 100)),
++            (Choices::BODYPRESS, MoveCategory::Physical, [0, 2, 0], [0, 0, 0], Abilities::NONE, Abilities::UNAWARE, (100, 100, 100, 100)),
++            (Choices::FOULPLAY, MoveCategory::Physical, [0, 0, 0], [2, 0, 0], Abilities::NONE, Abilities::UNAWARE, (100, 100, 100, 100)),
++            (Choices::TACKLE, MoveCategory::Physical, [2, 0, 0], [0, 0, 0], Abilities::NONE, Abilities::UNAWARE, (100, 100, 100, 100)),
++            (Choices::TACKLE, MoveCategory::Physical, [2, 0, 0], [0, 0, 0], Abilities::MOLDBREAKER, Abilities::UNAWARE, (200, 100, 200, 100)),
++            (Choices::WATERGUN, MoveCategory::Special, [0, 0, 2], [0, 0, 0], Abilities::NONE, Abilities::UNAWARE, (100, 100, 100, 100)),
++            (Choices::TACKLE, MoveCategory::Physical, [0, 0, 0], [0, -2, 0], Abilities::UNAWARE, Abilities::NONE, (100, 100, 100, 100)),
++            (Choices::WATERGUN, MoveCategory::Special, [0, 0, 0], [0, 0, -2], Abilities::UNAWARE, Abilities::NONE, (100, 100, 100, 100)),
++            (Choices::TACKLE, MoveCategory::Physical, [0, 0, 0], [0, 2, 0], Abilities::UNAWARE, Abilities::MOLDBREAKER, (100, 100, 100, 100)),
++            (Choices::WATERGUN, MoveCategory::Special, [0, 0, 0], [0, 0, 2], Abilities::UNAWARE, Abilities::MOLDBREAKER, (100, 100, 100, 100)),
++            (Choices::PSYSHOCK, MoveCategory::Special, [0, 0, 0], [0, -2, 0], Abilities::UNAWARE, Abilities::NONE, (100, 100, 100, 100)),
++        ];
++        for (move_id, category, user, target, user_ability, target_ability, expected) in cases {
++            let mut state = State::default();
++            state.side_one.get_active().ability = user_ability;
++            state.side_two.get_active().ability = target_ability;
++            state.side_one.attack_boost = user[0];
++            state.side_one.defense_boost = user[1];
++            state.side_one.special_attack_boost = user[2];
++            state.side_two.attack_boost = target[0];
++            state.side_two.defense_boost = target[1];
++            state.side_two.special_defense_boost = target[2];
++            let choice = Choice { move_id, category, ..Default::default() };
++            assert_eq!(get_attacking_and_defending_stats(
++                state.side_one.get_active_immutable(), state.side_two.get_active_immutable(),
++                &state.side_one, &state.side_two, &choice, Weather::NONE), expected,
++                "move={:?} user={:?} target={:?} abilities={:?}/{:?}", move_id, user, target, user_ability, target_ability);
++        }
++    }
++
++    #[test]
+     fn test_basic_damaging_move() {
+         let state = State::default();
+         let mut choice = Choice {

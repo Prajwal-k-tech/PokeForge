@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "scope": "Observed maxima only; classification never implies full rolls or transition conformance",
+  "source_root": "poke-engine PyPI 0.0.48 extracted src/ (not repository HEAD)",
+  "cases": {
+    "physical_super_effective": {"engine_maxima": [291,436], "oracle_maxima": [290,434], "classification": "modifier-stage-approximation", "evidence": "src/genx/damage_calc.rs:522-655 aggregates floating modifiers and applies critical multiplier late"},
+    "knock_off_air_balloon": {"engine_maxima": [190,285], "oracle_maxima": [188,282], "classification": "modifier-stage-approximation", "evidence": "src/genx/choice_effects.rs:501 applies 1.5 to float base power (97.5); official integer base-power stage rounds it"},
+    "knock_off_leftovers_control": {"engine_maxima": [190,285], "oracle_maxima": [188,282], "classification": "modifier-stage-approximation", "evidence": "src/genx/choice_effects.rs:501 applies 1.5 to float base power (97.5); official integer base-power stage rounds it"},
+    "physical_against_special_wall": {"engine_maxima": [918,1377], "oracle_maxima": [918,1376], "classification": "modifier-stage-approximation", "evidence": "src/genx/damage_calc.rs:608-655 critical multiplier after STAB instead of staged integer arithmetic"},
+    "body_press_defense_override": {"engine_maxima": [1014,765], "oracle_maxima": [1014,1520], "classification": "supported-engine-bug", "evidence": "src/genx/damage_calc.rs:395-404 critical attacking stat always base Defense, ignores positive Defense boost; unboosted control retains only rounding difference"},
+    "body_press_unboosted_control": {"engine_maxima": [510,765], "oracle_maxima": [510,764], "classification": "modifier-stage-approximation", "evidence": "src/genx/damage_calc.rs:608-655 critical multiplier after STAB"},
+    "foul_play_positive_target_attack": {"engine_maxima": [97,73], "oracle_maxima": [97,145], "classification": "supported-engine-bug", "evidence": "src/genx/damage_calc.rs:386-395 critical attacking stat always target base Attack, ignores positive target Attack boost; zero/negative boost controls agree"},
+    "sludge_bomb_mirror": {"engine_maxima": [121,182], "oracle_maxima": [121,181], "classification": "modifier-stage-approximation", "evidence": "src/genx/damage_calc.rs:608-655 late critical multiplier"},
+    "special_against_physical_wall": {"engine_maxima": [378,567], "oracle_maxima": [378,566], "classification": "modifier-stage-approximation", "evidence": "src/genx/damage_calc.rs:608-655 late critical multiplier"},
+    "tera_same_type_stab": {"engine_maxima": [388,582], "oracle_maxima": [388,580], "classification": "modifier-stage-approximation", "evidence": "src/genx/damage_calc.rs:522-655 aggregated STAB and late critical multiplier"},
+    "grassy_earthquake_reduction": {"engine_maxima": [145,218], "oracle_maxima": [146,218], "classification": "modifier-stage-approximation", "evidence": "src/genx/damage_calc.rs:522-570 multiplies terrain with STAB/type effectiveness instead of staged integer arithmetic"},
+    "reflect_physical_crit_bypass": {"engine_maxima": [145,436], "oracle_maxima": [145,434], "classification": "modifier-stage-approximation", "evidence": "src/genx/damage_calc.rs:608-655 late critical multiplier; regular screen result agrees in this fixture"},
+    "sand_rock_spdef": {"engine_maxima": [138,207], "oracle_maxima": [138,206], "classification": "modifier-stage-approximation", "evidence": "src/genx/damage_calc.rs:608-655 late critical multiplier"},
+    "life_orb": {"engine_maxima": [489,733], "oracle_maxima": [491,736], "classification": "modifier-stage-approximation", "evidence": "src/genx/items.rs:1145 multiplies base power by 1.3 rather than applying the final-damage modifier"},
+    "crit_negative_attack_bypass": {"engine_maxima": [147,436], "oracle_maxima": [146,434], "classification": "modifier-stage-approximation", "evidence": "src/genx/damage_calc.rs:522-655 modifier stages/critical multiplier; negative attack is bypassed, values differ from oracle arithmetic"}
+  }
+}

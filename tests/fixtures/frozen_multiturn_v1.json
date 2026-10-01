@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "scope": "Scripted multi-turn oracle trajectories with legal frozen OU teams; not agent games or engine conformance",
+  "scenarios": [
+    {"id": "future_sight_survives_source_switch", "teams": ["team_5.gen9ou_team", "team_11.gen9ou_team"], "leads": [3, 4], "steps": [["move 2", "move 1"], ["switch 2", "move 1"], ["move 4", "move 1"]], "required_log": ["move: Future Sight"]},
+    {"id": "wish_heals_replacement", "teams": ["team_15.gen9ou_team", "team_6.gen9ou_team"], "leads": [5, 1], "steps": [["move 2", "move 1"], ["switch 2", "move 1"], ["move 1", "move 3"]], "required_log": ["[from] move: Wish"]},
+    {"id": "chilly_reception_midturn_switch", "teams": ["team_5.gen9ou_team", "team_11.gen9ou_team"], "leads": [3, 4], "steps": [["move 4", "move 1"], ["switch 2", null], ["move 4", "move 1"]], "required_log": ["Chilly Reception", "Snow"]},
+    {"id": "encore_changes_selected_move", "teams": ["team_5.gen9ou_team", "team_11.gen9ou_team"], "leads": [4, 4], "steps": [["move 4", "move 1"], ["move 3", "move 2"], ["move 4", "move 1"]], "required_log": ["Encore"]}
+  ]
+}
