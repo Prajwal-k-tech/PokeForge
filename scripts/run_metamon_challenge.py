@@ -101,99 +101,101 @@ def main() -> None:
 
     wrappers.PokeAgentPlayer = PokeAgentPlayer
     attach_guard, safety_stats, safety_stream = None, None, None
-    if args.strict_policy_gate:
-        sys.path.insert(0, str(ROOT))
-        from src.integration.metamon_guard import install_local_guard
+    try:
+        if args.strict_policy_gate:
+            sys.path.insert(0, str(ROOT))
+            from src.integration.metamon_guard import install_local_guard
 
-        args.safety_log.parent.mkdir(parents=True, exist_ok=True)
-        safety_stream = args.safety_log.open("x")
-        attach_guard, safety_stats = install_local_guard(safety_stream)
-    model.gin_overrides = (model.gin_overrides or {}) | {
-        "MetamonAMAGOExperiment.traj_save_len": 10_000_000_000,
-    }
-    model.get_path_to_checkpoint = MethodType(
-        lambda self, requested_checkpoint: str(checkpoint_path), model
-    )
-
-    inference_ms = []
-    original_initialize = model.initialize_agent
-
-    def initialize_with_timing(*init_args, **init_kwargs):
-        experiment = original_initialize(*init_args, **init_kwargs)
-        if attach_guard is not None:
-            attach_guard(experiment.policy)
-        original_get_actions = experiment.policy.get_actions
-
-        def timed_get_actions(*policy_args, **policy_kwargs):
-            started = time.perf_counter_ns()
-            result = original_get_actions(*policy_args, **policy_kwargs)
-            if experiment.DEVICE.type == "cuda":
-                import torch
-
-                torch.cuda.synchronize(experiment.DEVICE)
-            elapsed_ms = (time.perf_counter_ns() - started) / 1_000_000
-            inference_ms.append(elapsed_ms)
-            print(f"POKEFORGE_INFERENCE_MS={elapsed_ms:.6f}", flush=True)
-            return result
-
-        experiment.policy.get_actions = timed_get_actions
-        return experiment
-
-    model.initialize_agent = initialize_with_timing
-    team = TeamSet(str(args.team.resolve().parent), "gen9ou")
-    team.team_files = [str(args.team.resolve())]
-    results = pretrained_vs_challenge(
-        pretrained_model=model,
-        username=args.username,
-        opponent_username=args.opponent,
-        role=args.role,
-        battle_format="gen9ou",
-        team_set=team,
-        total_battles=1,
-        checkpoint=checkpoint,
-        battle_backend="pokeagent",
-        action_temperature=args.temperature,
-        save_trajectories_to=str(args.trajectories) if args.trajectories else None,
-        save_results_to=str(args.results),
-        log_to_wandb=False,
-    )
-    def summarize(samples: list[float]) -> dict[str, float | int] | None:
-        if not samples:
-            return None
-        ordered = sorted(samples)
-        return {
-            "count": len(ordered),
-            "mean_ms": sum(ordered) / len(ordered),
-            "p50_ms": ordered[len(ordered) // 2],
-            "p95_ms": ordered[max(0, int(0.95 * len(ordered) + 0.999999) - 1)],
-            "max_ms": ordered[-1],
+            args.safety_log.parent.mkdir(parents=True, exist_ok=True)
+            safety_stream = args.safety_log.open("x")
+            attach_guard, safety_stats = install_local_guard(safety_stream)
+        model.gin_overrides = (model.gin_overrides or {}) | {
+            "MetamonAMAGOExperiment.traj_save_len": 10_000_000_000,
         }
+        model.get_path_to_checkpoint = MethodType(
+            lambda self, requested_checkpoint: str(checkpoint_path), model
+        )
 
-    timing = {
-        "cold_start_ms": inference_ms[0],
-        "all": summarize(inference_ms),
-        "warm": summarize(inference_ms[1:]),
-    }
-    print(
-        "POKEFORGE_METAMON_METRICS="
-        + json.dumps(
-            {
-                "model": args.model,
-                "model_name": model.model_name,
-                "checkpoint": checkpoint,
-                "checkpoint_revision": CHECKPOINT_REVISION,
-                "checkpoint_sha256": sha256(checkpoint_path),
-                "evaluation": {key: float(value) for key, value in results.items()},
-                "inference": timing,
-                "policy_variant": "pokeforge-request-gated-v1" if args.strict_policy_gate else "upstream",
-                "safety": safety_stats,
-            },
-            sort_keys=True,
-        ),
-        flush=True,
-    )
-    if safety_stream is not None:
-        safety_stream.close()
+        inference_ms = []
+        original_initialize = model.initialize_agent
+
+        def initialize_with_timing(*init_args, **init_kwargs):
+            experiment = original_initialize(*init_args, **init_kwargs)
+            if attach_guard is not None:
+                attach_guard(experiment.policy)
+            original_get_actions = experiment.policy.get_actions
+
+            def timed_get_actions(*policy_args, **policy_kwargs):
+                started = time.perf_counter_ns()
+                result = original_get_actions(*policy_args, **policy_kwargs)
+                if experiment.DEVICE.type == "cuda":
+                    import torch
+
+                    torch.cuda.synchronize(experiment.DEVICE)
+                elapsed_ms = (time.perf_counter_ns() - started) / 1_000_000
+                inference_ms.append(elapsed_ms)
+                print(f"POKEFORGE_INFERENCE_MS={elapsed_ms:.6f}", flush=True)
+                return result
+
+            experiment.policy.get_actions = timed_get_actions
+            return experiment
+
+        model.initialize_agent = initialize_with_timing
+        team = TeamSet(str(args.team.resolve().parent), "gen9ou")
+        team.team_files = [str(args.team.resolve())]
+        results = pretrained_vs_challenge(
+            pretrained_model=model,
+            username=args.username,
+            opponent_username=args.opponent,
+            role=args.role,
+            battle_format="gen9ou",
+            team_set=team,
+            total_battles=1,
+            checkpoint=checkpoint,
+            battle_backend="pokeagent",
+            action_temperature=args.temperature,
+            save_trajectories_to=str(args.trajectories) if args.trajectories else None,
+            save_results_to=str(args.results),
+            log_to_wandb=False,
+        )
+        def summarize(samples: list[float]) -> dict[str, float | int] | None:
+            if not samples:
+                return None
+            ordered = sorted(samples)
+            return {
+                "count": len(ordered),
+                "mean_ms": sum(ordered) / len(ordered),
+                "p50_ms": ordered[len(ordered) // 2],
+                "p95_ms": ordered[max(0, int(0.95 * len(ordered) + 0.999999) - 1)],
+                "max_ms": ordered[-1],
+            }
+
+        timing = {
+            "cold_start_ms": inference_ms[0] if inference_ms else None,
+            "all": summarize(inference_ms),
+            "warm": summarize(inference_ms[1:]),
+        }
+        print(
+            "POKEFORGE_METAMON_METRICS="
+            + json.dumps(
+                {
+                    "model": args.model,
+                    "model_name": model.model_name,
+                    "checkpoint": checkpoint,
+                    "checkpoint_revision": CHECKPOINT_REVISION,
+                    "checkpoint_sha256": sha256(checkpoint_path),
+                    "evaluation": {key: float(value) for key, value in results.items()},
+                    "inference": timing,
+                    "policy_variant": "pokeforge-request-gated-v1" if args.strict_policy_gate else "upstream",
+                    "safety": safety_stats,
+                },
+                sort_keys=True,
+            ),
+            flush=True,
+        )
+    finally:
+        if safety_stream is not None:
+            safety_stream.close()
 
 
 if __name__ == "__main__":
