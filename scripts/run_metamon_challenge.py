@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import logging
+import math
 import os
 import socket
 import subprocess
@@ -49,6 +50,14 @@ def sha256(path: Path) -> str:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def json_safe_metrics(values: dict[str, float]) -> dict[str, float | None]:
+    metrics = {}
+    for key, value in values.items():
+        numeric = float(value)
+        metrics[key] = numeric if math.isfinite(numeric) else None
+    return metrics
 
 
 def main() -> None:
@@ -184,7 +193,7 @@ def main() -> None:
                     "checkpoint": checkpoint,
                     "checkpoint_revision": CHECKPOINT_REVISION,
                     "checkpoint_sha256": sha256(checkpoint_path),
-                    "evaluation": {key: float(value) for key, value in results.items()},
+                    "evaluation": json_safe_metrics(results),
                     "inference": timing,
                     "policy_variant": "pokeforge-request-gated-v1" if args.strict_policy_gate else "upstream",
                     "safety": safety_stats,
