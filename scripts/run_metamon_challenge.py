@@ -199,6 +199,7 @@ def main() -> None:
                     "safety": safety_stats,
                 },
                 sort_keys=True,
+                allow_nan=False,
             ),
             flush=True,
         )
